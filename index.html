@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>StackLint</title>
+    <meta name="author" content="FakeRainBrigand">
+    <meta name="description" content="point out common StackOverflow question problems, automatically">
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="css/stacklint.css" type="text/css">
+</head>
+<body>
+<div class="container-fluid">
+
+    <!-- Header -->
+    <header class="navbar">
+        <div class="navbar-inner">
+            <a class="brand" href="./">StackLint</a>
+        </div>
+    </header>
+
+    <!-- This shows until a question id or url is entered -->
+    <div class="row-fluid" data-bind="visible: mode() === 'initial'" id="initial">
+        <div class="span8 offset2">
+            <form data-bind="submit: changedId">
+                <h1 class="text-center">Insert a StackOverflow Question ID or URL</h1>
+                <input class="input-block-level" data-bind="value: id" type="text" autofocus/>
+            </form>
+        </div>
+    </div>
+
+    <div class="row-fluid" data-bind="visible: mode() === 'lint'">
+        <!-- StackOverflow Post Contents -->
+        <div class="span5">
+            <h1 data-bind="text: question.title" class="text-info">Loading...</h1>
+
+            <h2 data-bind="visible: question.text().length">Text from Question</h2>
+            <div data-bind="foreach: question.text">
+                <p data-bind="text: $data"></p>
+            </div>
+            <h2 data-bind="visible: question.code().length">Code from Question</h2>
+            <div data-bind="foreach: question.code">
+                <pre data-bind="text: $data"></pre>
+            </div>
+        </div>
+
+        <!-- Lint Information -->
+        <div class="offset1 span5" data-bind="with: lint" id="lint">
+            <h1>Lint</h1>
+            <div data-bind="if: containsCode.test">
+                <h3 class="text-error">No Code In Question</h3>
+                <p>Questions should include code that allows the problem to be reproduced.</p>
+            </div>
+
+            <div data-bind="if: aspRaw.test">
+                <h3 class="text-warning">ASP Source</h3>
+                <p>If your question is mainly about <strong>CSS</strong> or <strong>JavaScript</strong>, you should show the compiled
+                    <span class="text-success">HTML</span> and <span class="text-success">JavaScript</span>, instead of
+                    the <span class="text-error">ASP source code</span>.</p>
+
+                <p>This greatly increases the number of potential responders.</p>
+            </div>
+
+            <div data-bind="if: howCanIDoThis.test">
+                <h3 class="text-error">Show an Effort!</h3>
+                <p>StackOverflow isn't a code request site.  This question has a small amount of code, and
+                asks <span class="text-error">"how can I do this"</span>.</p>
+
+                <p>
+                    <a data-bind="attr: {href: 'http://google.com/search?q=' + $root.question.title()}"
+                       class="btn btn-primary">Search Your Question On Google</a>
+                </p>
+
+                <p>If you did search, and the results you found didn't work: link to the pages, and explain why they
+                don't solve your problem.</p>
+            </div>
+
+            <div data-bind="if: lotsOfCode.test">
+                <h3 data-bind="css: {'text-error': lotsOfCode.test().chars > 2000}" class="text-warning">
+                    Too Much Code</h3>
+                <p>Questions should be <strong>succinct</strong>.  Having too much code makes them difficult to read.  Chances
+                are very good, that all of that code isn't necessary to an answerer.</p>
+                <p data-bind="visible: lotsOfCode.test().chars > 1000">
+                    You have <span class="text-error" data-bind="text: lotsOfCode.test().chars"></span> characters (whitespace excluded).
+                    Generally try to keep it around <span class="text-info">500</span>.
+                </p>
+                <p data-bind="visible: lotsOfCode.test().lines > 30">
+                    You have <span class="text-error" data-bind="text: lotsOfCode.test().lines"></span> lines of code.
+                    Generally try to keep it around <span class="text-info">15</span>.
+                </p>
+
+            </div>
+
+            <div data-bind="if: lotsOfText.test">
+                <h3 data-bind="css: {'text-error': lotsOfText.test().chars > 2000}" class="text-warning">
+                    Too Much Text</h3>
+                <p>Questions should be <strong>succinct</strong>.  Having too much text makes them difficult to read.  Many readers will
+                    skip over your question if it's too long.</p>
+                <p data-bind="visible: lotsOfText.test().chars > 1000">
+                    You have <span class="text-error" data-bind="text: lotsOfText.test().chars"></span> characters.
+                    Generally try to keep it around <span class="text-info">500</span>.
+                </p>
+            </div>
+
+            <div data-bind="if: vagueError.test">
+                <h3 class="text-warning">What error?</h3>
+                <p>It appears that you have an error or exception.  Please include the exact error you're
+                    experiencing.  Copy and paste it into your question, and make sure its indented four spaces for
+                    popper formatting.</p>
+            </div>
+
+            <div data-bind="if: didntTry.test">
+                <h3 class="text-warning">What did you try?</h3>
+                <p>Your question doesn't contain <span class="text-success">I tried...</span> or
+                    <span class="text-success">When I...</span></p>
+                <p>You need show what you did, what happened, and what you expect to happen.</p>
+
+                <p><small>this is difficult to parse, so this may come up when it's not applicable</small></p>
+            </div>
+
+            <div data-bind="if: missingFiddle.test">
+                <h3 class="text-warning">jsFiddle</h3>
+                <p>For web development, it's helpful to include a <a href="http://jsfiddle.net">jsFiddle</a>.  It
+                    allows potential answerers a consistent way find problems and solutions.
+                </p>
+                <ol>
+                    <li>Go to the jsFiddle website</li>
+                    <li>Paste your code in the correct boxes. Reduce it to the smallest amount that still shows
+                        the problem</li>
+                    <li>On the sidebar, you can select a library to use</li>
+                    <li>Press <button class="btn">Run</button> to see if it still shows the problem</li>
+                    <li>Click <button class="btn">Save</button></li>
+                    <li>Copy the link in the address bar, and include it in your question.</li>
+                </ol>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- This div holds the StackOverflow HTML for the parsing of its data
+     It's invisible to the user -->
+<div id="pageArea"></div>
+
+<script type="text/javascript" src="lib/underscore-min.js"></script>
+<script type="text/javascript" src="lib/jquery.min.js"></script>
+<script type="text/javascript" src="lib/knockout-min.js"></script>
+<script type="text/javascript" src="coffee/stacklint.js"></script>
+<script type="text/javascript" src="coffee/soparse.js"></script>
+<script>
+    function StackLint() {
+        var self = this, path = window.location.pathname,
+                id = path.replace(/^.*?(\d{5,})$/, "$1"), // Get the trailing digits from the path
+                hasId = path !== id; // detect if a replacement was made
+
+        if (hasId) {
+            self.id = ko.observable(id);
+        }
+        else {
+            self.id = ko.observable('');
+        }
+
+        // If we don't have an id, we need to ask the user for one
+        self.mode = ko.computed(function(){
+            return self.id() ? 'lint' : 'initial';
+        });
+
+        self.changedId = function(){
+            var id = self.id();
+
+            // If they pasted a URL, we just want the string of digits
+            // urls can look like any of these:
+            // http://stackoverflow.com/questions/17595711/looking-for...
+            // http://stackoverflow.com/q/17595711/1074592
+            // stackoverflow.com/q/17595711/1074592
+            // 17595711
+            id = id.replace(/^.*?\/(\d+).*$/g, "$1");
+
+
+            self.id(id);
+            self.question.id(id);
+
+            if (window.history && window.history.pushState) {
+                window.history.pushState(null, "", id);
+            }
+        };
+
+
+        // Data for the question
+        self.question = new StackQuestion(
+            self.id()
+        );
+
+        self.lint = sl.makeLintObject(self.question);
+    }
+
+    ko.applyBindings(window.app = new StackLint);
+</script>
+</body>
+</html>
