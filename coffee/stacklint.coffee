@@ -50,7 +50,13 @@ lints =
       code = question.code().join('\n')
       chars = code.replace(/\s+/g, "").length # chars - whitespace
       lines = code.split('\n').length
-      if chars > 1000 or lines > 30
+
+      if question.tags.contains 'sql'
+        if chars > 3000 or lines > 125
+          {chars, lines}
+        else
+          false
+      else if chars > 1000 or lines > 30
         {chars, lines}
       else
         false
@@ -60,6 +66,7 @@ lints =
     test: (question) ->
       text = question.text().join('\n')
       chars = text.replace(/\n+/g, "").length # chars - new lines
+
       if chars > 1000
         {chars}
       else
@@ -68,9 +75,7 @@ lints =
   didntTry:
     test: (question) ->
       text = question.text().join(' ').toLowerCase()
-      text.indexOf('i tried') is -1 and
-        text.indexOf('when i') is -1 and
-        text.indexOf('i am trying') is -1
+      not _.any [ _.contains text, x for x in ['i tried', 'when i', 'i am trying'] ]
 
   howCanIDoThis:
     test: (question) ->
@@ -78,14 +83,14 @@ lints =
       code = question.code().join('\n')
       codeChars = code.replace(/\s+/g, "").length
 
-      text.indexOf('how can i do this') isnt -1 and codeChars < 100
+      _.contains(text, 'how can i do this') and codeChars < 100
 
   aspRaw:
     test: (question) ->
       tags = question.tags().join(' ')
-      asp = tags.indexOf('asp') isnt -1
-      css =  tags.indexOf('css') isnt -1
-      js =  tags.indexOf('javascript') isnt -1
+      asp = _.contains tags, 'asp'
+      css = _.contains tags, 'css'
+      js =  _.contains tags, 'js'
       source = question.code().join(' ').indexOf("<%=") isnt -1
       asp and source and (css or js)
 

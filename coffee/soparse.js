@@ -31,6 +31,7 @@
       this.code = ko.observableArray([]);
       this.text = ko.observableArray([]);
       this.links = ko.observableArray([]);
+      this.user = ko.observable('');
       if (questionId != null) {
         this.handleId(questionId);
       }
@@ -47,7 +48,8 @@
         _this.tags(_this.parseTags());
         _this.code(_this.parseCode());
         _this.text(_this.parseText());
-        return _this.links(_this.parseLinks());
+        _this.links(_this.parseLinks());
+        return _this.user(_this.parseUser());
       });
     };
 
@@ -96,6 +98,15 @@
         });
       });
       return links;
+    };
+
+    StackQuestion.prototype.parseUser = function() {
+      var a;
+      a = this.el.find('.user-details a').get(0);
+      return {
+        href: "http://stackoverflow.com" + a.pathname,
+        name: a.innerText
+      };
     };
 
     return StackQuestion;

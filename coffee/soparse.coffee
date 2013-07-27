@@ -19,6 +19,7 @@ class StackQuestion
     @code = ko.observableArray []
     @text = ko.observableArray []
     @links = ko.observableArray []
+    @user = ko.observable ''
 
     @handleId questionId if questionId?
     @id.subscribe @handleId.bind this
@@ -38,6 +39,7 @@ class StackQuestion
       @code @parseCode()
       @text @parseText()
       @links @parseLinks()
+      @user @parseUser()
 
 
   parseTitle: ->
@@ -71,6 +73,14 @@ class StackQuestion
         href: this.href
         text: this.innerText
     links
+
+  parseUser: ->
+    a = @el.find('.user-details a').get(0)
+
+    {
+      href: "http://stackoverflow.com" + a.pathname
+      name: a.innerText
+    }
 
 
 

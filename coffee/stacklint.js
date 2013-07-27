@@ -84,7 +84,16 @@
         code = question.code().join('\n');
         chars = code.replace(/\s+/g, "").length;
         lines = code.split('\n').length;
-        if (chars > 1000 || lines > 30) {
+        if (question.tags.contains('sql')) {
+          if (chars > 3000 || lines > 125) {
+            return {
+              chars: chars,
+              lines: lines
+            };
+          } else {
+            return false;
+          }
+        } else if (chars > 1000 || lines > 30) {
           return {
             chars: chars,
             lines: lines
@@ -110,9 +119,20 @@
     },
     didntTry: {
       test: function(question) {
-        var text;
+        var text, x;
         text = question.text().join(' ').toLowerCase();
-        return text.indexOf('i tried') === -1 && text.indexOf('when i') === -1 && text.indexOf('i am trying') === -1;
+        return !_.any([
+          (function() {
+            var _i, _len, _ref, _results;
+            _ref = ['i tried', 'when i', 'i am trying'];
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              x = _ref[_i];
+              _results.push(_.contains(text, x));
+            }
+            return _results;
+          })()
+        ]);
       }
     },
     howCanIDoThis: {
@@ -121,16 +141,16 @@
         text = question.text().join(' ').toLowerCase();
         code = question.code().join('\n');
         codeChars = code.replace(/\s+/g, "").length;
-        return text.indexOf('how can i do this') !== -1 && codeChars < 100;
+        return _.contains(text, 'how can i do this') && codeChars < 100;
       }
     },
     aspRaw: {
       test: function(question) {
         var asp, css, js, source, tags;
         tags = question.tags().join(' ');
-        asp = tags.indexOf('asp') !== -1;
-        css = tags.indexOf('css') !== -1;
-        js = tags.indexOf('javascript') !== -1;
+        asp = _.contains(tags, 'asp');
+        css = _.contains(tags, 'css');
+        js = _.contains(tags, 'js');
         source = question.code().join(' ').indexOf("<%=") !== -1;
         return asp && source && (css || js);
       }
