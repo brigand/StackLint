@@ -5,7 +5,7 @@
 
 
 (function() {
-  var lints, root;
+  var lints, root, url;
 
   root = typeof window !== "undefined" && window !== null ? window : module.exports;
 
@@ -24,7 +24,8 @@
     containsCode: {
       test: function(question) {
         return question.code().length === 0;
-      }
+      },
+      dsc: "should have code"
     },
     vagueError: {
       test: function(question) {
@@ -34,7 +35,8 @@
         code = question.code().join(' ').toLowerCase();
         doesntShowError = code.indexOf('error') === -1 && code.indexOf('exception') === -1;
         return mentionsError && doesntShowError;
-      }
+      },
+      dsc: "should show complete error messages"
     },
     missingFiddle: {
       test: function(question) {
@@ -61,9 +63,9 @@
           }
           return _results;
         })());
-        console.log(shouldHaveFiddle, missingFiddle, tagString);
         return shouldHaveFiddle && missingFiddle;
-      }
+      },
+      dsc: "often should have a fiddle"
     },
     longLines: {
       test: function(question) {
@@ -76,7 +78,8 @@
           }
         }
         return false;
-      }
+      },
+      dsc: "shouldn't have long lines"
     },
     lotsOfCode: {
       test: function(question) {
@@ -85,7 +88,7 @@
         chars = code.replace(/\s+/g, "").length;
         lines = code.split('\n').length;
         if (question.tags.contains('sql')) {
-          if (chars > 3000 || lines > 125) {
+          if (chars > 2500 || lines > 125) {
             return {
               chars: chars,
               lines: lines
@@ -101,21 +104,31 @@
         } else {
           return false;
         }
-      }
+      },
+      dsc: "should have sucinct code"
     },
     lotsOfText: {
       test: function(question) {
         var chars, text;
         text = question.text().join('\n');
         chars = text.replace(/\n+/g, "").length;
-        if (chars > 1000) {
+        if (question.tags.contains('sql')) {
+          if (chars > 2000) {
+            return {
+              chars: chars
+            };
+          } else {
+            return false;
+          }
+        } else if (chars > 1000) {
           return {
             chars: chars
           };
         } else {
           return false;
         }
-      }
+      },
+      dsc: "should have consise text"
     },
     didntTry: {
       test: function(question) {
@@ -133,7 +146,8 @@
             return _results;
           })()
         ]);
-      }
+      },
+      dsc: "should show what was tried"
     },
     howCanIDoThis: {
       test: function(question) {
@@ -142,7 +156,8 @@
         code = question.code().join('\n');
         codeChars = code.replace(/\s+/g, "").length;
         return _.contains(text, 'how can i do this') && codeChars < 100;
-      }
+      },
+      dsc: "should show research effort"
     },
     aspRaw: {
       test: function(question) {
@@ -153,8 +168,14 @@
         js = _.contains(tags, 'js');
         source = question.code().join(' ').indexOf("<%=") !== -1;
         return asp && source && (css || js);
-      }
+      },
+      dsc: "should provide easily testable code"
     }
+  };
+
+  url = function(self) {
+    self.id() && self.question.title();
+    return location.host + location.pathname;
   };
 
   /* Exports*/
@@ -171,6 +192,38 @@
         output[name] = lint;
       }
       return output;
+    },
+    simpleComment: function() {
+      return "[StackLint](" + (url(this)) + ")";
+    },
+    descriptiveComment: function() {
+      var link, text,
+        _this = this;
+      link = "(" + (url(this)) + ")";
+      text = (function() {
+        var description, last, most, _ref;
+        description = (function() {
+          var lint, n, _ref, _results;
+          _ref = _this.lint;
+          _results = [];
+          for (n in _ref) {
+            lint = _ref[n];
+            if (lint.test()) {
+              _results.push(lint.dsc);
+            }
+          }
+          return _results;
+        })();
+        if (description.length > 1) {
+          _ref = [description.slice(0, -1), description.slice(-1)], most = _ref[0], last = _ref[1];
+          return [most.join(', '), last[0]].join(', and ');
+        } else if (description.length === 1) {
+          return description[0];
+        } else {
+          return "should look like this one";
+        }
+      })();
+      return "Questions [" + text + "]" + link;
     }
   };
 

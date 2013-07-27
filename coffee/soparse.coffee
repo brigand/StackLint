@@ -30,7 +30,7 @@ class StackQuestion
 
       # Load our HTML into a virtual div
       @el = $(data.contents).find('#content')
-      @el.remove('script')
+      @el.remove('script').remove('img')
 
       # Call these functions which interact with out invisible div to find information
       @title @parseTitle()

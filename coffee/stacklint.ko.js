@@ -15,6 +15,27 @@
     return false;
   };
 
+  ko.bindingHandlers.zclip = {
+    init: function(element, valueAccessor) {
+      var e, zclip;
+      try {
+        zclip = new ZeroClipboard(element);
+      } catch (_error) {
+        e = _error;
+        console.error("ZeroClipboard was unable to load", e);
+      }
+      return $(element).data('zclip', zclip);
+    },
+    update: function(element, valueAccessor) {
+      var value, zclip;
+      value = ko.unwrap(valueAccessor());
+      zclip = $(element).data('zclip');
+      if (zclip != null) {
+        return zclip.setText(value);
+      }
+    }
+  };
+
 }).call(this);
 
 /*

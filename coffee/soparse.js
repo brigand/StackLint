@@ -42,7 +42,7 @@
       var _this = this;
       return $.getJSON("" + anyorigin + stackquestion + "/" + questionId + "/&callback=?", function(data) {
         _this.el = $(data.contents).find('#content');
-        _this.el.remove('script');
+        _this.el.remove('script').remove('img');
         _this.title(_this.parseTitle());
         _this.url(_this.parseUrl());
         _this.tags(_this.parseTags());

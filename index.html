@@ -15,6 +15,20 @@
     <header class="navbar">
         <div class="navbar-inner">
             <a class="brand" href="./">StackLint</a>
+
+            <ul class="nav pull-right">
+                <li><a>Copy Comment Text:</a></li>
+
+                <li>
+                    <a href="#copy" data-bind="zclip: comment.simple()">
+                        [StackLint](sl/<span data-bind="text: id"></span>)</a>
+                </li>
+                <li>
+                    <a href="#copy" data-bind="zclip: comment.descriptive()">
+                        Questions [should..., and shouldn't...](<span data-bind="text: id"></span>)
+                    </a>
+                </li>
+            </ul>
         </div>
     </header>
 
@@ -33,17 +47,19 @@
         <div class="span5" data-bind="with: question">
             <h2><a data-bind="text: user().name, attr: {href: user().url}"></a> asked:</h2>
 
-            <h2><a data-bind="text: title, attr: {href: url}" class="text-info">Loading...</a></h2
+            <h2><a data-bind="text: title, attr: {href: url}" class="text-info">Loading...</a></h2>
 
             <h2 data-bind="visible: text().length">Text from Question</h2>
+
             <div data-bind="foreach: text">
                 <p data-bind="text: $data"></p>
             </div>
             <h2 data-bind="visible: code().length">Code from Question</h2>
+
             <div data-bind="foreach: code">
                 <pre data-bind="text: $data"></pre>
             </div>
-            <div style="margin-bottom: 1em;">
+            <div style="margin-bottom: 1em; border-top: 1px solid gray">
                 The above code is from <a href="http://stackoverflow.com">StackOverflow</a>,
                 and is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA</a>
             </div>
@@ -52,14 +68,22 @@
         <!-- Lint Information -->
         <div class="offset1 span5" data-bind="with: lint" id="lint">
             <h1>Lint</h1>
+
+            <!-- ** ERRORS ** -->
+
             <div data-bind="if: containsCode.test">
                 <h3 class="text-error">No Code In Question</h3>
+
                 <p>Questions should include code that allows the problem to be reproduced.</p>
             </div>
 
+            <!-- ** WARNINGS ** -->
+
             <div data-bind="if: aspRaw.test">
                 <h3 class="text-warning">ASP Source</h3>
-                <p>If your question is mainly about <strong>CSS</strong> or <strong>JavaScript</strong>, you should show the compiled
+
+                <p>If your question is mainly about <strong>CSS</strong> or <strong>JavaScript</strong>, you should show
+                    the compiled
                     <span class="text-success">HTML</span> and <span class="text-success">JavaScript</span>, instead of
                     the <span class="text-error">ASP source code</span>.</p>
 
@@ -68,8 +92,9 @@
 
             <div data-bind="if: howCanIDoThis.test">
                 <h3 class="text-error">Show an Effort!</h3>
-                <p>StackOverflow isn't a code request site.  This question has a small amount of code, and
-                asks <span class="text-error">"how can I do this"</span>.</p>
+
+                <p>StackOverflow isn't a code request site. This question has a small amount of code, and
+                    asks <span class="text-error">"how can I do this"</span>.</p>
 
                 <p>
                     <a data-bind="attr: {href: 'http://google.com/search?q=' + $root.question.title()}"
@@ -77,18 +102,23 @@
                 </p>
 
                 <p>If you did search, and the results you found didn't work: link to the pages, and explain why they
-                don't solve your problem.</p>
+                    don't solve your problem.</p>
             </div>
 
             <div data-bind="if: lotsOfCode.test">
                 <h3 data-bind="css: {'text-error': lotsOfCode.test().chars > 2000}" class="text-warning">
                     Too Much Code</h3>
-                <p>Questions should be <strong>succinct</strong>.  Having too much code makes them difficult to read.  Chances
-                are very good, that all of that code isn't necessary to an answerer.</p>
+
+                <p>Questions should be <strong>succinct</strong>. Having too much code makes them difficult to read.
+                    Chances
+                    are very good, that all of that code isn't necessary to an answerer.</p>
+
                 <p data-bind="visible: lotsOfCode.test().chars > 1000">
-                    You have <span class="text-error" data-bind="text: lotsOfCode.test().chars"></span> characters (whitespace excluded).
+                    You have <span class="text-error" data-bind="text: lotsOfCode.test().chars"></span> characters
+                    (whitespace excluded).
                     Generally try to keep it around <span class="text-info">500</span>.
                 </p>
+
                 <p data-bind="visible: lotsOfCode.test().lines > 30">
                     You have <span class="text-error" data-bind="text: lotsOfCode.test().lines"></span> lines of code.
                     Generally try to keep it around <span class="text-info">15</span>.
@@ -99,8 +129,11 @@
             <div data-bind="if: lotsOfText.test">
                 <h3 data-bind="css: {'text-error': lotsOfText.test().chars > 2000}" class="text-warning">
                     Too Much Text</h3>
-                <p>Questions should be <strong>succinct</strong>.  Having too much text makes them difficult to read.  Many readers will
+
+                <p>Questions should be <strong>succinct</strong>. Having too much text makes them difficult to read.
+                    Many readers will
                     skip over your question if it's too long.</p>
+
                 <p data-bind="visible: lotsOfText.test().chars > 1000">
                     You have <span class="text-error" data-bind="text: lotsOfText.test().chars"></span> characters.
                     Generally try to keep it around <span class="text-info">500</span>.
@@ -109,32 +142,44 @@
 
             <div data-bind="if: vagueError.test">
                 <h3 class="text-warning">What error?</h3>
-                <p>It appears that you have an error or exception.  Please include the exact error you're
-                    experiencing.  Copy and paste it into your question, and make sure its indented four spaces for
+
+                <p>It appears that you have an error or exception. Please include the exact error you're
+                    experiencing. Copy and paste it into your question, and make sure its indented four spaces for
                     popper formatting.</p>
             </div>
 
             <div data-bind="if: didntTry.test">
                 <h3 class="text-warning">What did you try?</h3>
+
                 <p>Your question doesn't contain <span class="text-success">I tried...</span> or
                     <span class="text-success">When I...</span></p>
+
                 <p>You need show what you did, what happened, and what you expect to happen.</p>
 
-                <p><small>this is difficult to parse, so this may come up when it's not applicable</small></p>
+                <p>
+                    <small>this is difficult to parse, so this may come up when it's not applicable</small>
+                </p>
             </div>
 
             <div data-bind="if: missingFiddle.test">
-                <h3 class="text-warning">jsFiddle</h3>
-                <p>For web development, it's helpful to include a <a href="http://jsfiddle.net">jsFiddle</a>.  It
+                <h3 class="text-notice">jsFiddle</h3>
+
+                <p>For web development, it's helpful to include a <a href="http://jsfiddle.net">jsFiddle</a>. It
                     allows potential answerers a consistent way find problems and solutions.
                 </p>
                 <ol>
                     <li>Go to the jsFiddle website</li>
                     <li>Paste your code in the correct boxes. Reduce it to the smallest amount that still shows
-                        the problem</li>
+                        the problem
+                    </li>
                     <li>On the sidebar, you can select a library to use</li>
-                    <li>Press <button class="btn">Run</button> to see if it still shows the problem</li>
-                    <li>Click <button class="btn">Save</button></li>
+                    <li>Press
+                        <button class="btn">Run</button>
+                        to see if it still shows the problem
+                    </li>
+                    <li>Click
+                        <button class="btn">Save</button>
+                    </li>
                     <li>Copy the link in the address bar, and include it in your question.</li>
                 </ol>
             </div>
@@ -151,10 +196,13 @@
 <script type="text/javascript" src="lib/underscore-min.js"></script>
 <script type="text/javascript" src="lib/jquery.min.js"></script>
 <script type="text/javascript" src="lib/knockout-min.js"></script>
+<script type="text/javascript" src="swf/ZeroClipboard.min.js"></script>
 <script type="text/javascript" src="coffee/stacklint.ko.js"></script>
 <script type="text/javascript" src="coffee/stacklint.js"></script>
 <script type="text/javascript" src="coffee/soparse.js"></script>
 <script>
+    ZeroClipboard.setDefaults({moviePath: "swf/ZeroClipboard.swf"});
+
     function StackLint() {
         var self = this, path = window.location.pathname,
                 id = path.replace(/^.*?(\d{5,})$/, "$1"), // Get the trailing digits from the path
@@ -168,11 +216,11 @@
         }
 
         // If we don't have an id, we need to ask the user for one
-        self.mode = ko.computed(function(){
+        self.mode = ko.computed(function () {
             return self.id() ? 'lint' : 'initial';
         });
 
-        self.changedId = function(){
+        self.changedId = function () {
             var id = self.id();
 
             // If they pasted a URL, we just want the string of digits
@@ -195,10 +243,15 @@
 
         // Data for the question
         self.question = new StackQuestion(
-            self.id()
+                self.id()
         );
 
         self.lint = sl.makeLintObject(self.question);
+
+        self.comment = {
+            simple: ko.computed(sl.simpleComment.bind(self)),
+            descriptive: ko.computed(sl.descriptiveComment.bind(self))
+        }
     }
 
     ko.applyBindings(window.app = new StackLint);
