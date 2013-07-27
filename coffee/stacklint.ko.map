@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "stacklint.ko.js",
+  "sourceRoot": "",
+  "sources": [
+    "stacklint.ko.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAEA;CAAA,KAAA,YAAA;;CAAA,CAAA,CAA4B,KAA5B,CAA4B,CAAf;CACX,OAAA,qBAAA;CAAA,GAD2B,mDAC3B;CAAA,EAAO,CAAP;AACA,CAAA,QAAA,oCAAA;0BAAA;AAC0C,CAAxC,GAAe,CAAa,CAA5B,CAAe;CAAf,GAAA,WAAO;QADT;CAAA,IADA;CAD0B,UAI1B;CAJF,EAA4B;CAA5B"
+}
