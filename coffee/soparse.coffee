@@ -78,7 +78,7 @@ class StackQuestion
     a = @el.find('.user-details a').get(0)
 
     {
-      href: "http://stackoverflow.com" + a.pathname
+      url: "http://stackoverflow.com" + a.pathname
       name: a.innerText
     }
 

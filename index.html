@@ -30,16 +30,22 @@
 
     <div class="row-fluid" data-bind="visible: mode() === 'lint'">
         <!-- StackOverflow Post Contents -->
-        <div class="span5">
-            <h1 data-bind="text: question.title" class="text-info">Loading...</h1>
+        <div class="span5" data-bind="with: question">
+            <h2><a data-bind="text: user().name, attr: {href: user().url}"></a> asked:</h2>
 
-            <h2 data-bind="visible: question.text().length">Text from Question</h2>
-            <div data-bind="foreach: question.text">
+            <h2><a data-bind="text: title, attr: {href: url}" class="text-info">Loading...</a></h2
+
+            <h2 data-bind="visible: text().length">Text from Question</h2>
+            <div data-bind="foreach: text">
                 <p data-bind="text: $data"></p>
             </div>
-            <h2 data-bind="visible: question.code().length">Code from Question</h2>
-            <div data-bind="foreach: question.code">
+            <h2 data-bind="visible: code().length">Code from Question</h2>
+            <div data-bind="foreach: code">
                 <pre data-bind="text: $data"></pre>
+            </div>
+            <div style="margin-bottom: 1em;">
+                The above code is from <a href="http://stackoverflow.com">StackOverflow</a>,
+                and is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA</a>
             </div>
         </div>
 

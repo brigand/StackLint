@@ -104,7 +104,7 @@
       var a;
       a = this.el.find('.user-details a').get(0);
       return {
-        href: "http://stackoverflow.com" + a.pathname,
+        url: "http://stackoverflow.com" + a.pathname,
         name: a.innerText
       };
     };
